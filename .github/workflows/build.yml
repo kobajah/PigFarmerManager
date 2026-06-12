@@ -18,7 +18,17 @@ jobs:
           cd PigFarmManager
           sed -i 's/kotlin              = "1.9.24"/kotlin              = "2.0.21"/' gradle/libs.versions.toml
           sed -i 's/ksp                 = "1.9.24-1.0.20"/ksp                 = "2.0.21-1.0.28"/' gradle/libs.versions.toml
-          cat gradle/libs.versions.toml | grep -E "kotlin|ksp"
+          sed -i 's/agp                 = "8.5.2"/agp                 = "8.6.1"/' gradle/libs.versions.toml
+
+      - name: Create gradle.properties
+        run: |
+          cat > PigFarmManager/gradle.properties << 'EOF'
+          android.useAndroidX=true
+          android.enableJetifier=true
+          android.suppressUnsupportedCompileSdk=35
+          org.gradle.jvmargs=-Xmx4g -XX:MaxMetaspaceSize=512m
+          kotlin.code.style=official
+          EOF
 
       - uses: actions/setup-java@v4
         with:
