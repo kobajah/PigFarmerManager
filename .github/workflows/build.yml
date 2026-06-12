@@ -13,6 +13,13 @@ jobs:
       - name: Extract project zip
         run: unzip PigFarmManager.zip
 
+      - name: Fix Kotlin version to 2.0.21
+        run: |
+          cd PigFarmManager
+          sed -i 's/kotlin              = "1.9.24"/kotlin              = "2.0.21"/' gradle/libs.versions.toml
+          sed -i 's/ksp                 = "1.9.24-1.0.20"/ksp                 = "2.0.21-1.0.28"/' gradle/libs.versions.toml
+          cat gradle/libs.versions.toml | grep -E "kotlin|ksp"
+
       - uses: actions/setup-java@v4
         with:
           java-version: '17'
@@ -25,7 +32,7 @@ jobs:
       - name: Build APK
         run: |
           cd PigFarmManager
-          gradle assembleDebug --no-daemon
+          gradle assembleDebug --no-daemon --stacktrace
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
