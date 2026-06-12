@@ -12,6 +12,26 @@ jobs:
 
       - name: Extract project zip
         run: unzip PigFarmManager.zip
+      - name: Patch NotificationWorker wildcard import
+        run: |
+          python3 << 'PYEOF'
+          filepath = 'PigFarmManager/app/src/main/java/com/pigfarm/manager/worker/NotificationWorker.kt'
+          with open(filepath, 'r') as f:
+              c = f.read()
+          c = c.replace(
+              'import com.pigfarm.manager.PigFarmApplication.*',
+              'import com.pigfarm.manager.PigFarmApplication'
+          )
+          c = c.replace(
+              'private fun channelForPriority(p: NotificationPriority) =',
+              'private fun channelForPriority(p: NotificationPriority): String ='
+          )
+          for ch in ['CHANNEL_URGENT','CHANNEL_HEALTH','CHANNEL_FEED','CHANNEL_GENERAL']:
+              c = c.replace(ch, f'PigFarmApplication.{ch}')
+          with open(filepath, 'w') as f:
+              f.write(c)
+          print("Patched OK")
+          PYEOF
 
       - name: Fix Kotlin version to 2.0.21
         run: |
